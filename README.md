@@ -11,12 +11,21 @@ Source revision: `2c17a4ed1c1ea4faf2ca553eeeea686071468cbc`.
 The Dockerfile checks the source archive's SHA-256; Python CLI dependencies
 are pinned to upstream's lockfile and verified against wheel hashes.
 
-## Build
+## Get the repository
 
-From this directory in PowerShell, with Docker Desktop in Linux container mode:
+This project is published at [github.com/rontu1997/acpype](https://github.com/rontu1997/acpype).
 
 ```powershell
-# Already downloaded in this workspace; run only when recreating the source checkout.
+git clone https://github.com/rontu1997/acpype.git
+cd acpype
+```
+
+## Build
+
+From the cloned repository in PowerShell, with Docker Desktop in Linux container
+mode, prepare the pinned ACPYPE source archive and build the image:
+
+```powershell
 git clone https://github.com/alanwilter/acpype.git upstream
 
 New-Item -ItemType Directory -Path .build -Force | Out-Null
@@ -64,14 +73,15 @@ The smoke test checks the version, Open Babel bindings, all 14 bundled
 executables, AM1-BCC/GAFF2 topology generation for ethanol, AMBER/GROMACS/CHARMM
 output files, and conversion back from AMBER to GROMACS. Each run creates a
 fresh `test-output/acpype-smoke.*` directory so cached calculations cannot
-satisfy the test. It runs without network access. Build and test logs are
-saved in `.build/`.
+satisfy the test. It runs without network access. Generated build and test logs
+can be saved under `.build/`; that directory is intentionally excluded from Git.
 
 The full upstream suite also passed in this container runtime: **154 passed,
 6 skipped, 93.16% coverage**. The six skipped integration cases require a
 separate GROMACS installation. The measured archived application source was
 compared with the installed application and matched before the test run.
-See `.build/upstream-tests-source.log` for the full result.
+The full result log is a generated local artifact and is not stored in this
+repository.
 
 ## Publish to Azure Container Registry
 
@@ -131,19 +141,20 @@ This reproduces the code-environment call with only `scriptName` substituted.
 It verifies a fresh ethane calculation, output logging, a script path containing
 spaces, and propagation of a failing script's exit code, using the existing image.
 
-## Image archive
+## Export an image archive
 
-The built image is also saved as `.build/acpype-discovery-2026-10-07.tar`.
-To load it on another machine running Linux containers:
+Docker image archives are intentionally excluded from Git because they are
+large generated artifacts. To create one locally:
+
+```powershell
+New-Item -ItemType Directory -Path .build -Force | Out-Null
+docker save --output .build/acpype-discovery-2026-10-07.tar acpype-discovery:2026-10-07 acpype-discovery:latest
+```
+
+To load that archive on another machine running Linux containers:
 
 ```powershell
 docker load --input .build/acpype-discovery-2026-10-07.tar
-```
-
-To recreate the archive:
-
-```powershell
-docker save --output .build/acpype-discovery-2026-10-07.tar acpype-discovery:2026-10-07 acpype-discovery:latest
 ```
 
 ACPYPE is GPL-3.0-or-later; the container retains its license and the bundled
