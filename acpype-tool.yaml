@@ -1,0 +1,67 @@
+name: acpype-tool
+description: ACPYPE 2026.9.5 for small-molecule topology generation and conversion
+  of existing AMBER topologies to GROMACS. Includes Linux AmberTools and Open Babel.
+  Python code environment packaged for PSC. Reads mounted inputs at /app/inputs and
+  writes topology files and logs to /work.
+version: 1.0.1
+category: Computational Chemistry
+license: GPL-3.0-or-later
+infra:
+- name: worker
+  infra_type: container
+  image:
+    acr: ""
+  compute:
+    min_resources:
+      cpu: 1
+      ram: 4Gi
+      gpu: 0
+      storage: 0Gi
+    max_resources:
+      cpu: 4
+      ram: 16Gi
+      gpu: 0
+      storage: 50Gi
+    infiniband: false
+    recommended_sku:
+    - Standard_D4s_v6
+    pool_type: static
+    pool_size: 1
+code_environments:
+- language: python
+  command: /bin/bash -c 'cd /work && exec python3 -u "$1" > /work/logs.out 2>&1' acpype-code
+    "/{{scriptName}}"
+  description: "Python 3.12 code environment with ACPYPE 2026.9.5, Open Babel, and\n\
+    bundled AmberTools (antechamber, parmchk2, tleap, sqm, and charmmgen).\nRuns on\
+    \ Linux AMD64 CPUs; no GPU or MPI required.\n\nAvailable modules:\n- acpype: ACPYPE\
+    \ topology generation and AMBER-to-GROMACS conversion\n- openbabel: Molecular\
+    \ file conversion and SMILES handling\n- subprocess: Run acpype and bundled AmberTools\
+    \ commands\n- pathlib, shutil, glob: File management and result packaging\n- json,\
+    \ re: Result serialization and parsing\n\nCan handle:\n- Ligand topology generation\
+    \ from MOL2, PDB, MDL/MOL, and SMILES\n- AM1-BCC or gas-phase charge assignment\
+    \ with an explicit net charge\n- GAFF/GAFF2 or AMBER atom typing\n- AMBER, GROMACS,\
+    \ CNS/XPLOR, and CHARMM topology output\n- Existing AMBER prmtop/inpcrd conversion\
+    \ to GROMACS\n- Python workflow scripting, logging, and result packaging\n\nIMPORTANT\
+    \ PATHS:\n- /app/inputs: Input molecule and topology files mounted read-only\n\
+    - /work: Writable working directory and output directory captured by Discovery\n\
+    \nWhen invoking this Python code environment, set outputMounts to [\"/work\"].\n\
+    The launcher runs the script in /work and records stdout and stderr in\n/work/logs.out.\
+    \ Keep the script working directory at /work, or use a child\nfolder under /work,\
+    \ so ACPYPE writes its topology folders into captured output.\nUse Path.cwd()\
+    \ or Path('/work') for output paths. Use absolute input paths.\nThe runner supplies\
+    \ scriptName; outputMounts specifies directories to capture\nwhen execution finishes.\
+    \ Execute ACPYPE with subprocess.run and check=True.\nThe launcher preserves the\
+    \ Python script's exit status.\n\nPython example for a neutral ligand:\n  import\
+    \ subprocess\n  subprocess.run([\"acpype\", \"-i\", \"/app/inputs/ligand.mol2\"\
+    , \"-b\", \"LIG\",\n                  \"-n\", \"0\", \"-c\", \"bcc\", \"-a\",\
+    \ \"gaff2\"], check=True)\n\nGenerate ligand topology with GAFF2 and AM1-BCC charges:\n\
+    \  acpype -i /app/inputs/ligand.mol2 -b LIG -n 0 -c bcc -a gaff2\nSet -n to the\
+    \ molecule's actual integral net charge.\nThis creates LIG.acpype inside /work\
+    \ with AMBER, GROMACS,\nCNS/XPLOR, and CHARMM files.\nUse -o gmx if only GROMACS\
+    \ output is needed.\n\nConvert existing AMBER topology and coordinates to GROMACS:\n\
+    \  acpype -p /app/inputs/system.prmtop -x /app/inputs/system.inpcrd -b SYSTEM\n\
+    \nSMILES input is also supported:\n  acpype -i 'CCO' -b ETH -n 0 -c bcc -a gaff2\n\
+    \nCommands: acpype --help; acpype --version; obabel; python3; bash.\nOMP_NUM_THREADS\
+    \ defaults to 1; keep thread use within the allocated CPUs.\nUse topology files\
+    \ only with compatible AMBER/GAFF force fields.\n"
+  infra_node: worker

@@ -1,0 +1,28 @@
+{
+  "image_tags": [
+    "acpype-discovery:2026-10-07",
+    "acpype-discovery:latest"
+  ],
+  "image_id": "sha256:a82f4feaf662a4b6b3acccde9e5132ba14186227172f5caedfca53e28c15aae3",
+  "platform": "linux/amd64",
+  "acpype_version": "2026.9.5",
+  "source_revision": "2c17a4ed1c1ea4faf2ca553eeeea686071468cbc",
+  "source_archive_sha256": "e5f038178a72eea644d5ff28f493340fd1dd6a7834200440706d12f516cace5c",
+  "image_archive": ".build\\acpype-discovery-2026-10-07.tar",
+  "image_archive_bytes": 124679168,
+  "image_archive_sha256": "c9063a8525a26991a02a1cd625a6e9a59c7467653f31b2b4fa80fe617936b29d",
+  "offline_smoke_test": "passed",
+  "discovery_launcher_test": "Fixed /work launcher: ethane calculation without output_directory, logs.out, script path with spaces, and failure exit23 passed locally",
+  "upstream_tests": {
+    "passed": 154,
+    "skipped": 6,
+    "coverage_percent": 93.16,
+    "skip_reason": "separate GROMACS installation required"
+  },
+  "publication_status": "User supplied a failed MSD run; corrected definition verified locally and awaits remote update and rerun",
+  "discovery_image_reference": "",
+  "discovery_definition_version": "1.0.1",
+  "discovery_output_mounts": [
+    "/work"
+  ]
+}

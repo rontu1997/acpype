@@ -1,0 +1,5 @@
+**
+!Dockerfile
+!requirements-cli.txt
+!.build/
+!.build/acpype-source.tar.gz
